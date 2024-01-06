@@ -2,8 +2,17 @@ from bs4 import BeautifulSoup
 import requests
 from typing import List
 
-def extract_link(header_object):
+def extract_link(header_object:BeautifulSoup) -> str:
+    """Extracts the link stored in the header object
+
+    Args:
+        header_object (sBeautifulSoup): Header object containing the link
+
+    Returns:
+        str: the link
+    """
     return header_object.find("a")["href"]
+
 
 def generate_context_text(query: str) -> List[str]:
     """Searches query on marketwatch.com and returns the text from the 5 most relevant articles
