@@ -20,9 +20,8 @@ Windows:
 ```bash
 financial_chatbot\Scripts\activate
 ```
-
-macOs/Linux
-````
+macOs/Linux:
+````bash
 source financial_chatbot/bin/activate
 ```
 
