@@ -21,10 +21,9 @@ Windows:
 financial_chatbot\Scripts\activate
 ```
 macOs/Linux:
-````bash
+```bash
 source financial_chatbot/bin/activate
 ```
-
 ### Install dependencies
 ```bash
 pip install -r requirements.txt
