@@ -1,6 +1,9 @@
 import streamlit as st
+import transformers
+import torch
+
 from transformers import pipeline
-from utils import generate_context_text, get_chatbot_response
+from utils import generate_context_text, get_chatbot_response, generate_model_input
 
 st.title("Financial Chatbot")
 
@@ -29,7 +32,10 @@ if "messages" not in st.session_state:
 
 #  Initial Chatbot pipeline object
 if "pipeline" not in st.session_state:
-    st.session_state.pipeline = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", device_map="auto")
+    try:
+        st.session_state.pipeline = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", torch_dtype=torch.bfloat16, device_map="auto")
+    except:
+        st.session_state.pipeline = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", device_map="auto")
 
 
 # Display chat messages from history on app rerun
@@ -49,49 +55,30 @@ if query:
 
     try:
 
+
         print(f"\nQuerying: {query}")
-
-        model_input = [
-            {
-                "role": "system",
-                "content": "You are a financial chatbot who is answer the users question as accurately. Try be conversational, concise, and work the question into the response. Use proper grammar in your response",
-            },
-        ]
-
 
         with st.chat_message("assistant"):
             st.markdown("Generating Response...")
 
         # Generate context for the model and add it to the message list
-        print("Starting to generate context")
-        context_texts = generate_context_text(query, 1)
-        for text in context_texts:
-
-            model_input.append(
-                {
-                    "role": "system",
-                    "content": text,
-                }
-            )
-        print("Finished generating context")
+        print("\tStarting to generate context")
+        context_text = generate_context_text(query, 2)
+        print("\tFinished generating context")
         
-        # Add query to the message list
-        user_query = {
-            "role": "user",
-            "content": query,
-        }
+        # Generate model input
+        model_input = generate_model_input(st.session_state.pipeline.tokenizer, query, context_text)
 
+        # Add query to the message list
+        user_query = model_input[-1]
         st.session_state.messages.append(user_query)
-        model_input.append(user_query)
 
         # Generate Response
-        print("Starting to Generate Model Response")
+        print("\tStarting to Generate Model Response")
         model_prompt = st.session_state.pipeline.tokenizer.apply_chat_template(
             model_input, 
             tokenize=False, 
             add_generation_prompt=True,  
-            max_length=2000,
-            truncation=True
         )
 
         output = st.session_state.pipeline(
@@ -102,7 +89,7 @@ if query:
             top_k=50, 
             top_p=0.95
         )
-        print("Finished Generating Model Response")
+        print("\tFinished Generating Model Response")
         
         chatbot_response = get_chatbot_response(output)
 
@@ -119,8 +106,8 @@ if query:
         )
 
     # If there is an error in the users query
-    except:
-        error_message = "I'm sorry, I had trouble understanding your query. Could you please try again?"
+    except Exception as e:
+        error_message = f"I'm sorry, there was an error generating your. Could you please try again? Here is the error message: {e}"
 
         with st.chat_message("assistant"):
             st.markdown(error_message)
