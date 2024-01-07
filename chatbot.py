@@ -1,6 +1,5 @@
 import streamlit as st
 from transformers import pipeline
-import torch
 from utils import generate_context_text, get_chatbot_response
 
 st.title("Financial Chatbot")
@@ -30,7 +29,7 @@ if "messages" not in st.session_state:
 
 #  Initial Chatbot pipeline object
 if "pipeline" not in st.session_state:
-    st.session_state.pipeline = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", torch_dtype=torch.bfloat16, device_map="auto")
+    st.session_state.pipeline = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", device_map="auto")
 
 
 # Display chat messages from history on app rerun
