@@ -1,6 +1,6 @@
 # Financial Chatbot
 ## Description
-A chatbot for answering financial questions. It uses https://www.marketwatch.com/ articles as its source for information
+A chatbot for answering financial questions. It uses https://www.marketwatch.com/ articles as its source for information. It uses the TinyLlama-1.1B-Chat-v1.0 model from hugging face which can be found here: https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0.
 ## How to run
 Requires python 3.10 to run
 ### (Optional) Create Vitural Environment
