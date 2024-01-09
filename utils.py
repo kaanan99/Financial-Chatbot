@@ -76,22 +76,24 @@ def generate_context_text(query: str, query_limit:int=5) -> List[str]:
     ]
 
     # Get text for context articles
-    
+    print("Response Sources:")
     for link in links:
-        context_page = requests.get(link)
-        context_page_content = context_page.text
-        article_parser = BeautifulSoup(context_page_content, "html.parser")
+        if link != "#":
+            print(f"\t{link}",)
+            context_page = requests.get(link)
+            context_page_content = context_page.text
+            article_parser = BeautifulSoup(context_page_content, "html.parser")
 
-        # Extract Text
-        paragraphs = article_parser.find_all("p")
-        text = " ".join(
-            [
-                re.sub("\s\s+", " ", p.get_text().strip())
-                for p in paragraphs
-            ]
-        )
+            # Extract Text
+            paragraphs = article_parser.find_all("p")
+            text = " ".join(
+                [
+                    re.sub("\s\s+", " ", p.get_text().strip())
+                    for p in paragraphs
+                ]
+            )
 
-        context_article_texts.append(text)
+            context_article_texts.append(text)
     
     context_text = " ".join(context_article_texts)
 
